@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 
-const Navbar = () => {
+interface NavbarProps {
+  onAuthClick?: () => void;
+}
+
+const Navbar = ({ onAuthClick }: NavbarProps) => {
   return (
     <nav className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 lg:px-6">
@@ -24,7 +28,10 @@ const Navbar = () => {
           </div>
           
           {/* CTA Button */}
-          <Button className="text-sm px-4 py-2">
+          <Button 
+            className="text-sm px-4 py-2"
+            onClick={onAuthClick}
+          >
             Get Started
           </Button>
         </div>
