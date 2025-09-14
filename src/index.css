@@ -37,7 +37,7 @@ All colors MUST be HSL.
     --input: 0 0% 90%;
     --ring: 0 0% 0%;
 
-    --radius: 0.5rem;
+    --radius: 0rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -105,20 +105,20 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans;
   }
   
-  /* Minimalistic typography system */
+  /* Ultra minimalistic typography system */
   .hero-text {
-    @apply text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight;
   }
   
   .subheading-text {
-    @apply text-lg md:text-xl leading-relaxed font-medium;
+    @apply text-base md:text-lg leading-relaxed font-medium;
   }
   
   .body-text {
-    @apply text-sm md:text-base leading-relaxed;
+    @apply text-xs md:text-sm leading-relaxed;
   }
   
   .trust-text {
-    @apply text-xs md:text-sm leading-relaxed;
+    @apply text-xs leading-relaxed;
   }
 }
