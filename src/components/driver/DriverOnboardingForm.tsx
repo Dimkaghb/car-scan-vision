@@ -12,6 +12,7 @@ import ProgressBar from './onboarding/ProgressBar';
 import StepPersonalInfo from './onboarding/StepPersonalInfo';
 import StepDriverLicense from './onboarding/StepDriverLicense';
 import StepExperience from './onboarding/StepExperience';
+import StepVehicleInfo from './onboarding/StepVehicleInfo';
 import StepCarImage from './onboarding/StepCarImage';
 import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 
@@ -20,6 +21,11 @@ interface FormData {
   lastName: string;
   driverLicense: string;
   experience: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: number | '';
+  vehicleColor: string;
+  vehiclePlateNumber: string;
   carImage: File | null;
   carImagePreview: string | null;
 }
@@ -29,6 +35,11 @@ interface FormErrors {
   lastName?: string;
   driverLicense?: string;
   experience?: string;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleYear?: string;
+  vehicleColor?: string;
+  vehiclePlateNumber?: string;
   carImage?: string;
 }
 
@@ -44,12 +55,17 @@ const DriverOnboardingForm: React.FC = () => {
     lastName: '',
     driverLicense: '',
     experience: '',
+    vehicleMake: '',
+    vehicleModel: '',
+    vehicleYear: '',
+    vehicleColor: '',
+    vehiclePlateNumber: '',
     carImage: null,
     carImagePreview: null,
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   // Validation functions
   const validateStep = (step: number): boolean => {
@@ -82,6 +98,26 @@ const DriverOnboardingForm: React.FC = () => {
         break;
 
       case 4:
+        if (!formData.vehicleMake.trim()) {
+          newErrors.vehicleMake = 'Выберите марку автомобиля';
+        }
+        if (!formData.vehicleModel.trim()) {
+          newErrors.vehicleModel = 'Укажите модель автомобиля';
+        }
+        if (!formData.vehicleYear) {
+          newErrors.vehicleYear = 'Выберите год выпуска';
+        }
+        if (!formData.vehicleColor.trim()) {
+          newErrors.vehicleColor = 'Выберите цвет автомобиля';
+        }
+        if (!formData.vehiclePlateNumber.trim()) {
+          newErrors.vehiclePlateNumber = 'Укажите номер автомобиля';
+        } else if (formData.vehiclePlateNumber.length < 6) {
+          newErrors.vehiclePlateNumber = 'Номер должен содержать не менее 6 символов';
+        }
+        break;
+
+      case 5:
         if (!formData.carImage) {
           newErrors.carImage = 'Пожалуйста, загрузите фото автомобиля';
         }
@@ -128,6 +164,11 @@ const DriverOnboardingForm: React.FC = () => {
         lastName: formData.lastName,
         driverLicense: formData.driverLicense,
         experience: formData.experience,
+        vehicleMake: formData.vehicleMake,
+        vehicleModel: formData.vehicleModel,
+        vehicleYear: formData.vehicleYear as number,
+        vehicleColor: formData.vehicleColor,
+        vehiclePlateNumber: formData.vehiclePlateNumber,
         carImageUrl,
       };
 
@@ -141,6 +182,11 @@ const DriverOnboardingForm: React.FC = () => {
           full_name: `${formData.firstName} ${formData.lastName}`,
           driver_license_number: formData.driverLicense,
           driver_experience: formData.experience,
+          vehicle_make: formData.vehicleMake,
+          vehicle_model: formData.vehicleModel,
+          vehicle_year: formData.vehicleYear,
+          vehicle_color: formData.vehicleColor,
+          vehicle_plate_number: formData.vehiclePlateNumber,
           profile_image_url: carImageUrl,
           onboarding_completed: true,
         };
@@ -204,6 +250,23 @@ const DriverOnboardingForm: React.FC = () => {
         );
 
       case 4:
+        return (
+          <StepVehicleInfo
+            vehicleMake={formData.vehicleMake}
+            vehicleModel={formData.vehicleModel}
+            vehicleYear={formData.vehicleYear}
+            vehicleColor={formData.vehicleColor}
+            vehiclePlateNumber={formData.vehiclePlateNumber}
+            onVehicleMakeChange={(value) => setFormData({ ...formData, vehicleMake: value })}
+            onVehicleModelChange={(value) => setFormData({ ...formData, vehicleModel: value })}
+            onVehicleYearChange={(value) => setFormData({ ...formData, vehicleYear: value })}
+            onVehicleColorChange={(value) => setFormData({ ...formData, vehicleColor: value })}
+            onVehiclePlateNumberChange={(value) => setFormData({ ...formData, vehiclePlateNumber: value })}
+            errors={errors}
+          />
+        );
+
+      case 5:
         return (
           <StepCarImage
             carImage={formData.carImage}

@@ -5,6 +5,11 @@ export interface OnboardingData {
   lastName: string;
   driverLicense: string;
   experience: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: number;
+  vehicleColor: string;
+  vehiclePlateNumber: string;
   carImageUrl: string;
 }
 
@@ -19,21 +24,20 @@ export const completeDriverOnboarding = async (
   onboardingData: OnboardingData
 ): Promise<OnboardingResponse> => {
   try {
-    // Prepare update data with basic fields first
+    // Prepare update data with all fields
     const updateData: any = {
       full_name: `${onboardingData.firstName} ${onboardingData.lastName}`,
       driver_license_number: onboardingData.driverLicense,
       profile_image_url: onboardingData.carImageUrl,
+      driver_experience: onboardingData.experience,
+      vehicle_make: onboardingData.vehicleMake,
+      vehicle_model: onboardingData.vehicleModel,
+      vehicle_year: onboardingData.vehicleYear,
+      vehicle_color: onboardingData.vehicleColor,
+      vehicle_plate_number: onboardingData.vehiclePlateNumber,
+      onboarding_completed: true,
       updated_at: new Date().toISOString()
     };
-
-    // Try to add optional fields that might not exist in the schema yet
-    try {
-      updateData.driver_experience = onboardingData.experience;
-      updateData.onboarding_completed = true;
-    } catch (e) {
-      console.warn('Some onboarding fields may not exist in database schema');
-    }
 
     // Update user profile with onboarding data
     const { error } = await supabase
