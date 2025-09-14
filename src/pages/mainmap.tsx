@@ -50,6 +50,9 @@ export const MainMap = () => {
     const [randomCars, setRandomCars] = useState<RandomCar[]>([]);
     const [hoveredCar, setHoveredCar] = useState<RandomCar | null>(null);
     const [modalPosition, setModalPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [expandedCar, setExpandedCar] = useState<RandomCar | null>(null);
+    const [isModalExpanded, setIsModalExpanded] = useState(false);
+    const [isModalHovered, setIsModalHovered] = useState(false);
 
     // Mock data generators
     const generateDriverInfo = (): DriverInfo => {
@@ -76,6 +79,18 @@ export const MainMap = () => {
             year: currentYear - Math.floor(Math.random() * 8), // 0-7 years old
             condition: conditions[Math.floor(Math.random() * conditions.length)]
         };
+    };
+
+    // Modal handlers
+    const handleExpandModal = (car: RandomCar) => {
+        setExpandedCar(car);
+        setIsModalExpanded(true);
+        setHoveredCar(null); // Clear hover state when expanding
+    };
+
+    const handleCloseModal = () => {
+        setExpandedCar(null);
+        setIsModalExpanded(false);
     };
 
     useEffect(() => {
@@ -329,7 +344,20 @@ export const MainMap = () => {
             </div>
             
             {/* Map container */}
-            <div className="flex-1 relative">
+            <div 
+                className="flex-1 relative"
+                onClick={(e) => {
+                    // Close expanded modal when clicking anywhere on the map area
+                    if (isModalExpanded) {
+                        // Check if click is not on the modal itself
+                        const target = e.target as HTMLElement;
+                        const isModalClick = target.closest('[data-modal="true"]');
+                        if (!isModalClick) {
+                            handleCloseModal();
+                        }
+                    }
+                }}
+            >
                 <div 
                     ref={mapRef} 
                     className="h-full w-full"
@@ -351,11 +379,20 @@ export const MainMap = () => {
                                 transform: 'translate(-50%, -50%)'
                             }}
                             onMouseEnter={(e) => {
-                                setHoveredCar(car);
-                                setModalPosition({ x: point.x, y: point.y });
+                                if (!isModalExpanded) {
+                                    setHoveredCar(car);
+                                    setModalPosition({ x: point.x, y: point.y });
+                                }
                             }}
-                            onMouseLeave={() => {
-                                setHoveredCar(null);
+                            onMouseLeave={(e) => {
+                                if (!isModalExpanded) {
+                                    // Add delay to prevent modal from disappearing too quickly
+                                    setTimeout(() => {
+                                        if (!isModalExpanded && !isModalHovered) {
+                                            setHoveredCar(null);
+                                        }
+                                    }, 300);
+                                }
                             }}
                         >
                             <CarIcon rotation={car.rotation} size={40} />
@@ -363,13 +400,39 @@ export const MainMap = () => {
                     );
                 })}
                 
-                {/* Car Modal */}
-                {hoveredCar && (
+                {/* Car Modal - Hover State */}
+                {hoveredCar && !isModalExpanded && (
+                    <div
+                        onMouseEnter={() => setIsModalHovered(true)}
+                        onMouseLeave={() => {
+                            setIsModalHovered(false);
+                            setTimeout(() => {
+                                if (!isModalHovered) {
+                                    setHoveredCar(null);
+                                }
+                            }, 100);
+                        }}
+                    >
+                        <CarModal
+                            driverInfo={hoveredCar.driverInfo}
+                            carInfo={hoveredCar.carInfo}
+                            position={modalPosition}
+                            isVisible={true}
+                            isExpanded={false}
+                            onExpand={() => handleExpandModal(hoveredCar)}
+                        />
+                    </div>
+                )}
+                
+                {/* Car Modal - Expanded State */}
+                {expandedCar && isModalExpanded && (
                     <CarModal
-                        driverInfo={hoveredCar.driverInfo}
-                        carInfo={hoveredCar.carInfo}
+                        driverInfo={expandedCar.driverInfo}
+                        carInfo={expandedCar.carInfo}
                         position={modalPosition}
                         isVisible={true}
+                        isExpanded={true}
+                        onClose={handleCloseModal}
                     />
                 )}
                 
