@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
 });
 
 interface AddressResult {
-  lat: number;
+  lat: number;  
   lon: number;
   display_name: string;
 }
@@ -53,6 +53,7 @@ export const MainMap = () => {
     const [expandedCar, setExpandedCar] = useState<RandomCar | null>(null);
     const [isModalExpanded, setIsModalExpanded] = useState(false);
     const [isModalHovered, setIsModalHovered] = useState(false);
+    const [pickupLocation, setPickupLocation] = useState<{ lat: number; lon: number } | null>(null);
 
     // Mock data generators
     const generateDriverInfo = (): DriverInfo => {
@@ -225,12 +226,25 @@ export const MainMap = () => {
     const addMarker = (lat: number, lon: number, title: string, isPickup: boolean = true) => {
         if (!mapInstanceRef.current) return;
 
-        const icon = L.divIcon({
-            html: `<div style="background-color: ${isPickup ? '#10b981' : '#ef4444'}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-            className: 'custom-marker',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-        });
+        let icon;
+        
+        if (isPickup) {
+            // Use map-pin.png image for pickup/landing
+            icon = L.icon({
+                iconUrl: '/src/assets/map-pin.png',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+        } else {
+            // Use locator.png image for destination
+            icon = L.icon({
+                iconUrl: '/src/assets/locator.png',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+        }
 
         const marker = L.marker([lat, lon], { icon })
             .addTo(mapInstanceRef.current)
@@ -311,12 +325,12 @@ export const MainMap = () => {
                 throw new Error(`Destination address "${destination}" not found`);
             }
 
+            // Store pickup location for taxi generation
+            setPickupLocation({ lat: pickupResult.lat, lon: pickupResult.lon });
+
             // Add markers
       addMarker(pickupResult.lat, pickupResult.lon, pickupResult.display_name, true);
       addMarker(destinationResult.lat, destinationResult.lon, destinationResult.display_name, false);
-
-      // Generate random cars around pickup location
-      generateRandomCars(pickupResult.lat, pickupResult.lon);
 
       // Draw route
       await drawRoute(pickupResult, destinationResult);
@@ -339,6 +353,11 @@ export const MainMap = () => {
                     onRouteFound={() => {
                         // Route found callback - can be used for additional logic
                         console.log('Route has been successfully found and displayed');
+                    }}
+                    onFindTaxi={() => {
+                        if (pickupLocation) {
+                            generateRandomCars(pickupLocation.lat, pickupLocation.lon);
+                        }
                     }}
                 />
             </div>
