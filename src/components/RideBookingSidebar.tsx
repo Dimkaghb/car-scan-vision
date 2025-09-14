@@ -115,7 +115,7 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
       {/* Header */}
       <div className={`${isMobile ? 'p-3 pt-6' : 'p-4'} border-b border-gray-200`}>
         <div className="flex items-center justify-between">
-          <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>Uber</h1>
+          <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>Carvision</h1>
           {!isMobile && (
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="sm">
