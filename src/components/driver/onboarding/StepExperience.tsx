@@ -2,7 +2,7 @@ import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Star, Award } from 'lucide-react';
+import { Clock, Star, Award, Check } from 'lucide-react';
 
 interface StepExperienceProps {
   experience: string;
@@ -32,28 +32,34 @@ const StepExperience: React.FC<StepExperienceProps> = ({
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Trust badge */}
+      <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted px-2 py-1 bg-lime-50 mb-4">
+        <Check className="h-3 w-3" />
+        <span>Шаг 3 из 5</span>
+      </div>
+      
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Опыт вождения
-        </h2>
-        <p className="text-gray-600">
+        <h1 className="hero-text mb-3">
+          Опыт <mark className="highlight"><span>вождения</span></mark>
+        </h1>
+        <p className="body-text text-muted-foreground">
           Расскажите о своем опыте работы водителем или вождения в целом
         </p>
       </div>
 
       <div className="space-y-6">
         {/* Experience Textarea */}
-        <div className="space-y-2">
-          <Label htmlFor="experience" className="text-sm font-medium text-gray-700">
-            Чем занимается ваша компания?
+        <div className="space-y-1">
+          <Label htmlFor="experience" className="body-text font-medium">
+            Опыт вождения
           </Label>
           <Textarea
             id="experience"
             value={experience}
             onChange={(e) => onExperienceChange(e.target.value)}
             placeholder="например: Работаю водителем такси уже 3 года..."
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 min-h-[120px] resize-none ${
-              errors.experience ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 min-h-[120px] resize-none ${
+              errors.experience ? 'border-destructive' : 'border-border'
             }`}
             maxLength={maxCharacters}
           />
@@ -62,18 +68,18 @@ const StepExperience: React.FC<StepExperienceProps> = ({
           <div className="flex justify-between items-center">
             <div>
               {errors.experience && (
-                <p className="text-sm text-red-600">{errors.experience}</p>
+                <p className="text-xs text-destructive">{errors.experience}</p>
               )}
             </div>
-            <p className={`text-sm ${characterCount > maxCharacters * 0.9 ? 'text-red-600' : 'text-gray-500'}`}>
+            <p className={`text-xs ${characterCount > maxCharacters * 0.9 ? 'text-destructive' : 'text-muted-foreground'}`}>
               {characterCount}/{maxCharacters}
             </p>
           </div>
         </div>
 
         {/* Quick Examples */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium text-gray-700">
+        <div className="space-y-2">
+          <Label className="body-text font-medium">
             Примеры ответов:
           </Label>
           <div className="space-y-2">
@@ -81,21 +87,21 @@ const StepExperience: React.FC<StepExperienceProps> = ({
               <button
                 key={index}
                 onClick={() => handleExampleClick(example)}
-                className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors"
+                className="w-full text-left p-3 border border-border rounded-lg hover:border-lime-600 hover:bg-lime-50 transition-colors"
               >
-                <p className="text-sm text-gray-700 line-clamp-2">{example}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2">{example}</p>
               </button>
             ))}
           </div>
         </div>
 
         {/* Tips */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-            <Star className="h-4 w-4 text-yellow-500" />
+        <div className="bg-muted rounded-lg p-3">
+          <h4 className="body-text font-medium mb-2 flex items-center gap-2">
+            <Star className="h-3 w-3 text-lime-600" />
             Советы для хорошего ответа:
           </h4>
-          <ul className="text-sm text-gray-600 space-y-1">
+          <ul className="text-xs text-muted-foreground space-y-1">
             <li className="flex items-center gap-2">
               <Clock className="h-3 w-3" />
               Укажите стаж вождения или работы водителем

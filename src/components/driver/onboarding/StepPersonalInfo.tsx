@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Check } from 'lucide-react';
 
 interface StepPersonalInfoProps {
   firstName: string;
@@ -22,19 +23,25 @@ const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
 }) => {
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Trust badge */}
+      <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted px-2 py-1 bg-lime-50 mb-4">
+        <Check className="h-3 w-3" />
+        <span>Шаг 1 из 5</span>
+      </div>
+      
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Базовая информация
-        </h2>
-        <p className="text-gray-600">
+        <h1 className="hero-text mb-3">
+          Базовая <mark className="highlight"><span>информация</span></mark>
+        </h1>
+        <p className="body-text text-muted-foreground">
           Укажите ваше имя и фамилию для регистрации в качестве водителя
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* First Name */}
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+        <div className="space-y-1">
+          <Label htmlFor="firstName" className="body-text font-medium">
             Имя
           </Label>
           <Input
@@ -43,18 +50,18 @@ const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
             value={firstName}
             onChange={(e) => onFirstNameChange(e.target.value)}
             placeholder="например, Дамир"
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-              errors.firstName ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${
+              errors.firstName ? 'border-destructive' : 'border-border'
             }`}
           />
           {errors.firstName && (
-            <p className="text-sm text-red-600">{errors.firstName}</p>
+            <p className="text-xs text-destructive">{errors.firstName}</p>
           )}
         </div>
 
         {/* Last Name */}
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+        <div className="space-y-1">
+          <Label htmlFor="lastName" className="body-text font-medium">
             Фамилия
           </Label>
           <Input
@@ -63,12 +70,12 @@ const StepPersonalInfo: React.FC<StepPersonalInfoProps> = ({
             value={lastName}
             onChange={(e) => onLastNameChange(e.target.value)}
             placeholder="например, Айсулу"
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-              errors.lastName ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${
+              errors.lastName ? 'border-destructive' : 'border-border'
             }`}
           />
           {errors.lastName && (
-            <p className="text-sm text-red-600">{errors.lastName}</p>
+            <p className="text-xs text-destructive">{errors.lastName}</p>
           )}
         </div>
       </div>

@@ -285,13 +285,13 @@ const DriverOnboardingForm: React.FC = () => {
 
   if (isSubmitting) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-900">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto" />
+          <h2 className="text-lg font-medium text-foreground">
             Завершение регистрации...
           </h2>
-          <p className="text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Сохраняем ваши данные и настраиваем профиль водителя
           </p>
         </div>
@@ -300,25 +300,25 @@ const DriverOnboardingForm: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-6">
         {/* Progress Bar */}
         <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
         {/* Step Content */}
-        <div className="mb-8">
+        <div className="mb-6">
           {renderCurrentStep()}
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-center items-center gap-4 max-w-md mx-auto">
+        <div className="flex justify-center items-center gap-3 max-w-md mx-auto">
           {currentStep > 1 && (
             <Button
               variant="outline"
               onClick={goToPreviousStep}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5 text-xs px-3 py-2 border-border hover:bg-muted"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-3.5 w-3.5" />
               Назад
             </Button>
           )}
@@ -326,18 +326,18 @@ const DriverOnboardingForm: React.FC = () => {
           {currentStep < totalSteps ? (
             <Button
               onClick={goToNextStep}
-              className="bg-green-500 hover:bg-green-600 flex items-center gap-2 flex-1"
+              className="bg-green-500 hover:bg-green-600 flex items-center gap-1.5 flex-1 text-xs px-4 py-2"
             >
               Далее
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           ) : (
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-green-500 hover:bg-green-600 flex items-center gap-2 flex-1"
+              className="bg-green-500 hover:bg-green-600 flex items-center gap-1.5 flex-1 text-xs px-4 py-2 disabled:opacity-50"
             >
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="h-3.5 w-3.5" />
               Завершить
             </Button>
           )}

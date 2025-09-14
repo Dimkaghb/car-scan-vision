@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Car } from 'lucide-react';
+import { Car, Check } from 'lucide-react';
 
 interface StepVehicleInfoProps {
   vehicleMake: string;
@@ -53,137 +52,139 @@ const StepVehicleInfo: React.FC<StepVehicleInfoProps> = ({
   ];
 
   return (
-    <div className="max-w-md mx-auto">
-      <Card>
-        <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <Car className="h-6 w-6 text-green-600" />
-          </div>
-          <CardTitle className="text-xl font-bold text-gray-900">
-            Информация об автомобиле
-          </CardTitle>
-          <CardDescription className="text-gray-600">
-            Укажите данные вашего автомобиля для регистрации в системе
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="w-full max-w-md mx-auto">
+      {/* Trust badge */}
+      <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted px-2 py-1 bg-lime-50 mb-4">
+        <Check className="h-3 w-3" />
+        <span>Шаг 4 из 5</span>
+      </div>
+      
+      <div className="text-center mb-8">
+        <h1 className="hero-text mb-3">
+          Информация об <mark className="highlight"><span>автомобиле</span></mark>
+        </h1>
+        <p className="body-text text-muted-foreground">
+          Укажите данные вашего автомобиля для регистрации в системе
+        </p>
+      </div>
+
+      <div className="space-y-4">
           {/* Vehicle Make */}
-          <div className="space-y-2">
-            <Label htmlFor="vehicleMake" className="text-sm font-medium text-gray-700">
-              Марка автомобиля *
-            </Label>
-            <Select value={vehicleMake} onValueChange={onVehicleMakeChange}>
-              <SelectTrigger className={`w-full ${errors.vehicleMake ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Выберите марку" />
-              </SelectTrigger>
-              <SelectContent>
-                {popularMakes.map((make) => (
-                  <SelectItem key={make} value={make}>
-                    {make}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.vehicleMake && (
-              <p className="text-sm text-red-600">{errors.vehicleMake}</p>
-            )}
-          </div>
+        <div className="space-y-1">
+          <Label htmlFor="vehicleMake" className="body-text font-medium">
+            Марка автомобиля
+          </Label>
+          <Select value={vehicleMake} onValueChange={onVehicleMakeChange}>
+            <SelectTrigger className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${errors.vehicleMake ? 'border-destructive' : 'border-border'}`}>
+              <SelectValue placeholder="Выберите марку" />
+            </SelectTrigger>
+            <SelectContent>
+              {popularMakes.map((make) => (
+                <SelectItem key={make} value={make}>
+                  {make}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.vehicleMake && (
+            <p className="text-xs text-destructive">{errors.vehicleMake}</p>
+          )}
+        </div>
 
           {/* Vehicle Model */}
-          <div className="space-y-2">
-            <Label htmlFor="vehicleModel" className="text-sm font-medium text-gray-700">
-              Модель автомобиля *
-            </Label>
-            <Input
-              id="vehicleModel"
-              type="text"
-              value={vehicleModel}
-              onChange={(e) => onVehicleModelChange(e.target.value)}
-              placeholder="Например: Camry, Civic, Altima"
-              className={`w-full ${errors.vehicleModel ? 'border-red-500' : ''}`}
-            />
-            {errors.vehicleModel && (
-              <p className="text-sm text-red-600">{errors.vehicleModel}</p>
-            )}
-          </div>
+        <div className="space-y-1">
+          <Label htmlFor="vehicleModel" className="body-text font-medium">
+            Модель автомобиля
+          </Label>
+          <Input
+            id="vehicleModel"
+            type="text"
+            value={vehicleModel}
+            onChange={(e) => onVehicleModelChange(e.target.value)}
+            placeholder="Например: Camry, Civic, Altima"
+            className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${errors.vehicleModel ? 'border-destructive' : 'border-border'}`}
+          />
+          {errors.vehicleModel && (
+            <p className="text-xs text-destructive">{errors.vehicleModel}</p>
+          )}
+        </div>
 
           {/* Vehicle Year */}
-          <div className="space-y-2">
-            <Label htmlFor="vehicleYear" className="text-sm font-medium text-gray-700">
-              Год выпуска *
-            </Label>
-            <Select 
-              value={vehicleYear.toString()} 
-              onValueChange={(value) => onVehicleYearChange(parseInt(value))}
-            >
-              <SelectTrigger className={`w-full ${errors.vehicleYear ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Выберите год" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.vehicleYear && (
-              <p className="text-sm text-red-600">{errors.vehicleYear}</p>
-            )}
-          </div>
+        <div className="space-y-1">
+          <Label htmlFor="vehicleYear" className="body-text font-medium">
+            Год выпуска
+          </Label>
+          <Select 
+            value={vehicleYear.toString()} 
+            onValueChange={(value) => onVehicleYearChange(parseInt(value))}
+          >
+            <SelectTrigger className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${errors.vehicleYear ? 'border-destructive' : 'border-border'}`}>
+              <SelectValue placeholder="Выберите год" />
+            </SelectTrigger>
+            <SelectContent>
+              {years.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.vehicleYear && (
+            <p className="text-xs text-destructive">{errors.vehicleYear}</p>
+          )}
+        </div>
 
           {/* Vehicle Color */}
-          <div className="space-y-2">
-            <Label htmlFor="vehicleColor" className="text-sm font-medium text-gray-700">
-              Цвет автомобиля *
-            </Label>
-            <Select value={vehicleColor} onValueChange={onVehicleColorChange}>
-              <SelectTrigger className={`w-full ${errors.vehicleColor ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Выберите цвет" />
-              </SelectTrigger>
-              <SelectContent>
-                {colors.map((color) => (
-                  <SelectItem key={color} value={color}>
-                    {color}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.vehicleColor && (
-              <p className="text-sm text-red-600">{errors.vehicleColor}</p>
-            )}
-          </div>
+        <div className="space-y-1">
+          <Label htmlFor="vehicleColor" className="body-text font-medium">
+            Цвет автомобиля
+          </Label>
+          <Select value={vehicleColor} onValueChange={onVehicleColorChange}>
+            <SelectTrigger className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${errors.vehicleColor ? 'border-destructive' : 'border-border'}`}>
+              <SelectValue placeholder="Выберите цвет" />
+            </SelectTrigger>
+            <SelectContent>
+              {colors.map((color) => (
+                <SelectItem key={color} value={color}>
+                  {color}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.vehicleColor && (
+            <p className="text-xs text-destructive">{errors.vehicleColor}</p>
+          )}
+        </div>
 
           {/* Vehicle Plate Number */}
-          <div className="space-y-2">
-            <Label htmlFor="vehiclePlateNumber" className="text-sm font-medium text-gray-700">
-              Номер автомобиля *
-            </Label>
-            <Input
-              id="vehiclePlateNumber"
-              type="text"
-              value={vehiclePlateNumber}
-              onChange={(e) => onVehiclePlateNumberChange(e.target.value.toUpperCase())}
-              placeholder="Например: А123БВ77"
-              className={`w-full ${errors.vehiclePlateNumber ? 'border-red-500' : ''}`}
-              maxLength={9}
-            />
-            {errors.vehiclePlateNumber && (
-              <p className="text-sm text-red-600">{errors.vehiclePlateNumber}</p>
-            )}
-            <p className="text-xs text-gray-500">
-              Введите государственный номер вашего автомобиля
-            </p>
-          </div>
+        <div className="space-y-1">
+          <Label htmlFor="vehiclePlateNumber" className="body-text font-medium">
+            Номер автомобиля
+          </Label>
+          <Input
+            id="vehiclePlateNumber"
+            type="text"
+            value={vehiclePlateNumber}
+            onChange={(e) => onVehiclePlateNumberChange(e.target.value.toUpperCase())}
+            placeholder="Например: А123БВ77"
+            className={`w-full px-3 py-2 border focus:ring-1 focus:ring-lime-600 focus:border-lime-600 ${errors.vehiclePlateNumber ? 'border-destructive' : 'border-border'}`}
+            maxLength={9}
+          />
+          {errors.vehiclePlateNumber && (
+            <p className="text-xs text-destructive">{errors.vehiclePlateNumber}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Введите государственный номер вашего автомобиля
+          </p>
+        </div>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Важно:</strong> Убедитесь, что все данные указаны корректно. 
-              Эта информация будет использоваться для идентификации вашего автомобиля в системе.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="mt-6 p-3 bg-muted rounded-lg">
+          <p className="text-xs text-muted-foreground">
+            <strong>Важно:</strong> Убедитесь, что все данные указаны корректно. 
+            Эта информация будет использоваться для идентификации вашего автомобиля в системе.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

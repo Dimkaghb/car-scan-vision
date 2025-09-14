@@ -126,21 +126,22 @@ All colors MUST be HSL.
 @layer components {
   .highlight {
     position: relative;
-    display: inline-block;
+    display: inline;
     background: none;
-  }
-  .highlight > span {
-    position: relative;
     z-index: 10;
   }
   .highlight::before {
     content: "";
     position: absolute;
-    inset: 0;
+    top: 50%;
+    left: -2px;
+    right: -2px;
+    height: 0.8em;
+    transform: translateY(-50%);
     background-image: url("data:image/svg+xml;charset=utf-8;base64,PHN2ZyB3aWR0aD0nMzg4JyBoZWlnaHQ9JzY0JyBmaWxsPSdub25lJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxwYXRoIGQ9J00zODYgMjRjLTY0IDMtMjExIDgtMzQxIDAgNjEgNiAxNzQgMTQgMzAwIDE0LTM3IDItMTQ4IDQtMzQzLTYnIHN0cm9rZT0nI0MxRjExRCcgc3Ryb2tlLXdpZHRoPSc0OCcvPjwvc3ZnPg==");
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-color: transparent;
-    z-index: 0;
+    z-index: -1;
   }
 }

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Upload, X, Camera, AlertCircle, CheckCircle, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { detectCarScratches, DetectionResult, ScratchDetectionResponse } from '@/services/roboflowApi';
+import { uploadInspectionImage } from '@/services/imageUploadService';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ScratchDetectionUploadProps {
   onDetectionComplete?: (result: ScratchDetectionResponse) => void;
@@ -19,12 +21,15 @@ const ScratchDetectionUpload: React.FC<ScratchDetectionUploadProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Handle file selection
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Validate file type
@@ -53,8 +58,46 @@ const ScratchDetectionUpload: React.FC<ScratchDetectionUploadProps> = ({
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       
-      // Notify parent component about image selection
-      onImageSelected?.(url);
+      // Upload image to Supabase Storage
+      if (user?.id) {
+        setIsUploading(true);
+        try {
+          const uploadResult = await uploadInspectionImage(file, user.id);
+          
+          if (uploadResult.success && uploadResult.url) {
+            setUploadedImageUrl(uploadResult.url);
+            // Notify parent component about uploaded image URL
+            onImageSelected?.(uploadResult.url);
+            
+            toast({
+              title: 'Image Uploaded',
+              description: 'Image has been uploaded successfully',
+            });
+          } else {
+            toast({
+              title: 'Upload Failed',
+              description: uploadResult.error || 'Failed to upload image',
+              variant: 'destructive',
+            });
+            // Fallback to preview URL
+            onImageSelected?.(url);
+          }
+        } catch (error) {
+          console.error('Upload error:', error);
+          toast({
+            title: 'Upload Error',
+            description: 'An error occurred while uploading the image',
+            variant: 'destructive',
+          });
+          // Fallback to preview URL
+          onImageSelected?.(url);
+        } finally {
+          setIsUploading(false);
+        }
+      } else {
+        // No user ID, use preview URL as fallback
+        onImageSelected?.(url);
+      }
       
       // Clear previous results
       setDetectionResult(null);
@@ -87,6 +130,7 @@ const ScratchDetectionUpload: React.FC<ScratchDetectionUploadProps> = ({
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
     }
+    setUploadedImageUrl(null);
     setDetectionResult(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -200,6 +244,21 @@ const ScratchDetectionUpload: React.FC<ScratchDetectionUploadProps> = ({
               <span>{selectedFile.name}</span>
               <span>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
             </div>
+            
+            {/* Upload Status */}
+            {isUploading && (
+              <div className="flex items-center justify-center space-x-2 text-sm text-blue-600">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span>Uploading image...</span>
+              </div>
+            )}
+            
+            {uploadedImageUrl && !isUploading && (
+              <div className="flex items-center justify-center space-x-2 text-sm text-green-600">
+                <CheckCircle className="h-4 w-4" />
+                <span>Image uploaded successfully</span>
+              </div>
+            )}
           </div>
         )}
 
