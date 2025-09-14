@@ -5,6 +5,10 @@ import 'leaflet/dist/leaflet.css';
 import { RideBookingSidebar } from '@/components/RideBookingSidebar';
 import { CarIcon, getRandomRotation, getRandomCarCount } from '@/components/CarIcon';
 import CarModal from '@/components/CarModal';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Menu, X, Navigation, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 // Fix for default markers in Leaflet with bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -54,6 +58,8 @@ export const MainMap = () => {
     const [isModalExpanded, setIsModalExpanded] = useState(false);
     const [isModalHovered, setIsModalHovered] = useState(false);
     const [pickupLocation, setPickupLocation] = useState<{ lat: number; lon: number } | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const isMobile = useIsMobile();
 
     // Mock data generators
     const generateDriverInfo = (): DriverInfo => {
@@ -344,36 +350,78 @@ export const MainMap = () => {
     };
 
     return (
-        <div className="flex h-screen w-full">
+        <div className="flex h-screen w-full relative">
+            {/* Mobile Header */}
+            {isMobile && (
+                <div className="absolute top-0 left-0 right-0 z-[2000] bg-white/90 backdrop-blur-md border-b border-gray-200 h-16 flex items-center justify-between px-4">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="p-2 hover:bg-gray-100 rounded-lg"
+                    >
+                        {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    </Button>
+                    <h1 className="text-lg font-bold">Map</h1>
+                    <div className="w-10" /> {/* Spacer */}
+                </div>
+            )}
+
             {/* Sidebar */}
-            <div className="w-80 flex-shrink-0">
+            <div className={`
+                ${isMobile 
+                    ? `fixed inset-y-0 left-0 z-[1500] w-80 transform transition-transform duration-300 ease-in-out ${
+                        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`
+                    : 'w-80 flex-shrink-0 relative z-10'
+                }
+            `}>
                 <RideBookingSidebar 
-                    className="h-full" 
+                    className={`h-full ${isMobile ? 'shadow-2xl' : ''}`}
                     onAddressSearch={handleAddressSearch}
                     onRouteFound={() => {
-                        // Route found callback - can be used for additional logic
                         console.log('Route has been successfully found and displayed');
+                        if (isMobile) {
+                            setIsSidebarOpen(false); // Auto-close sidebar on mobile after search
+                        }
                     }}
                     onFindTaxi={() => {
                         if (pickupLocation) {
                             generateRandomCars(pickupLocation.lat, pickupLocation.lon);
                         }
+                        if (isMobile) {
+                            setIsSidebarOpen(false); // Auto-close sidebar on mobile after finding taxi
+                        }
                     }}
+                    isMobile={isMobile}
                 />
             </div>
+
+            {/* Mobile Overlay */}
+            {isMobile && isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-[1400] backdrop-blur-sm"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
             
             {/* Map container */}
             <div 
-                className="flex-1 relative"
+                className={`flex-1 relative ${
+                    isMobile ? 'pt-16' : ''
+                }`}
                 onClick={(e) => {
                     // Close expanded modal when clicking anywhere on the map area
                     if (isModalExpanded) {
-                        // Check if click is not on the modal itself
                         const target = e.target as HTMLElement;
                         const isModalClick = target.closest('[data-modal="true"]');
                         if (!isModalClick) {
                             handleCloseModal();
                         }
+                    }
+                    // Close sidebar on mobile when clicking map
+                    if (isMobile && isSidebarOpen) {
+                        setIsSidebarOpen(false);
                     }
                 }}
             >
@@ -456,26 +504,73 @@ export const MainMap = () => {
                 )}
                 
                 {/* Zoom controls */}
-                <div className="absolute top-4 right-4 z-10 flex flex-col space-y-2">
+                <div className={`absolute ${isMobile ? 'bottom-20 right-4' : 'top-4 right-4'} z-[1100] flex flex-col space-y-2`}>
                     <button 
-                        className="bg-white shadow-lg rounded-lg w-10 h-10 flex items-center justify-center hover:bg-gray-50 border"
+                        className={`bg-white/90 backdrop-blur-md shadow-lg rounded-lg ${
+                            isMobile ? 'w-12 h-12' : 'w-10 h-10'
+                        } flex items-center justify-center hover:bg-gray-50 border border-gray-200 transition-all duration-200 hover:scale-105`}
                         onClick={() => mapInstanceRef.current?.zoomIn()}
                     >
-                        +
+                        <span className={`${isMobile ? 'text-lg' : 'text-base'} font-semibold`}>+</span>
                     </button>
                     <button 
-                        className="bg-white shadow-lg rounded-lg w-10 h-10 flex items-center justify-center hover:bg-gray-50 border"
+                        className={`bg-white/90 backdrop-blur-md shadow-lg rounded-lg ${
+                            isMobile ? 'w-12 h-12' : 'w-10 h-10'
+                        } flex items-center justify-center hover:bg-gray-50 border border-gray-200 transition-all duration-200 hover:scale-105`}
                         onClick={() => mapInstanceRef.current?.zoomOut()}
                     >
-                        −
+                        <span className={`${isMobile ? 'text-lg' : 'text-base'} font-semibold`}>−</span>
                     </button>
                 </div>
+
+                {/* Mobile Quick Actions */}
+                {isMobile && (
+                    <div className="absolute bottom-4 left-4 right-4 z-[1100]">
+                        <Card className="bg-white/90 backdrop-blur-md border border-gray-200 shadow-lg">
+                            <CardContent className="p-3">
+                                <div className="flex items-center justify-between">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setIsSidebarOpen(true)}
+                                        className="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+                                    >
+                                        <MapPin className="h-4 w-4" />
+                                        <span className="text-sm font-medium">Book Ride</span>
+                                    </Button>
+                                    <div className="h-6 w-px bg-gray-200" />
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                            // Center map on user location
+                                            if (navigator.geolocation) {
+                                                navigator.geolocation.getCurrentPosition((position) => {
+                                                    const { latitude, longitude } = position.coords;
+                                                    mapInstanceRef.current?.setView([latitude, longitude], 15);
+                                                });
+                                            }
+                                        }}
+                                        className="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+                                    >
+                                        <Navigation className="h-4 w-4" />
+                                        <span className="text-sm font-medium">My Location</span>
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
                 
                 {isLoading && (
-                    <div className="absolute top-4 left-4 bg-white px-4 py-2 rounded-lg shadow-lg border z-[1000]">
-                        <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                            <span className="text-sm font-medium">Searching addresses...</span>
+                    <div className={`absolute ${
+                        isMobile ? 'top-20 left-4 right-4' : 'top-4 left-4'
+                    } bg-white/90 backdrop-blur-md px-4 py-3 rounded-lg shadow-lg border border-gray-200 z-[1200]`}>
+                        <div className="flex items-center space-x-3">
+                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+                            <span className={`${isMobile ? 'text-base' : 'text-sm'} font-medium text-gray-700`}>
+                                Searching addresses...
+                            </span>
                         </div>
                     </div>
                 )}

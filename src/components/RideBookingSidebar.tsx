@@ -9,9 +9,10 @@ interface RideBookingSidebarProps {
   onAddressSearch?: (pickup: string, destination: string) => void;
   onRouteFound?: () => void;
   onFindTaxi?: () => void;
+  isMobile?: boolean;
 }
 
-export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, onFindTaxi }: RideBookingSidebarProps) => {
+export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, onFindTaxi, isMobile = false }: RideBookingSidebarProps) => {
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
   const [selectedRide, setSelectedRide] = useState('uberx');
@@ -112,52 +113,54 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
   return (
     <div className={`bg-white shadow-lg border-r border-gray-200 h-screen flex flex-col ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className={`${isMobile ? 'p-3 pt-6' : 'p-4'} border-b border-gray-200`}>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">Uber</h1>
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
-              Поездки
-            </Button>
-            <Button variant="ghost" size="sm">
-              <User className="h-4 w-4" />
-              Действия
-            </Button>
-          </div>
+          <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold`}>Uber</h1>
+          {!isMobile && (
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="sm">
+                Поездки
+              </Button>
+              <Button variant="ghost" size="sm">
+                <User className="h-4 w-4" />
+                Действия
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Trip Planning */}
-      <div className="p-4 space-y-4 flex-1 overflow-y-auto">
-        <h2 className="text-lg font-semibold">Заказ поездок</h2>
+      <div className={`${isMobile ? 'p-3' : 'p-4'} space-y-4 flex-1 overflow-y-auto`}>
+        <h2 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>Заказ поездок</h2>
         
         {/* Location Inputs or Route Display */}
         {!routeFound ? (
           <div className="space-y-3">
             <div className="relative">
-              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <MapPin className={`absolute left-3 top-3 h-4 w-4 text-gray-400`} />
               <Input
                 placeholder="Место посадки"
                 value={pickup}
                 onChange={(e) => setPickup(e.target.value)}
-                className="pl-10 py-3"
+                className={`pl-10 ${isMobile ? 'py-4 text-base' : 'py-3'} rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200`}
               />
             </div>
             
             <div className="relative">
-              <Navigation className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Navigation className={`absolute left-3 top-3 h-4 w-4 text-gray-400`} />
               <Input
                 placeholder="Пункт назначения"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="pl-10 py-3"
+                className={`pl-10 ${isMobile ? 'py-4 text-base' : 'py-3'} rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200`}
               />
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="absolute right-2 top-2 h-8 w-8 p-0"
+                className={`absolute right-2 top-2 ${isMobile ? 'h-10 w-10' : 'h-8 w-8'} p-0 hover:bg-gray-100 rounded-md`}
               >
-                +
+                <span className={`${isMobile ? 'text-lg' : 'text-base'} font-semibold text-gray-600`}>+</span>
               </Button>
             </div>
           </div>
@@ -206,11 +209,11 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
         {/* Search Button - Hide when route is found */}
         {!routeFound && (
           <Button 
-            className="w-full py-3 text-base font-medium" 
+            className={`w-full ${isMobile ? 'py-4 text-base' : 'py-3 text-base'} font-medium bg-black hover:bg-gray-800 text-white rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]`}
             onClick={handleSearch}
             disabled={isSearching}
           >
-            <Search className="h-4 w-4 mr-2" />
+            <Search className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'} mr-2`} />
             {isSearching ? 'Searching...' : 'Find Route'}
           </Button>
         )}
@@ -224,14 +227,14 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
 
         {/* Price Input Section - Shows after route is found */}
         {routeFound && !isSearchingTaxi && (
-          <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <div className={`space-y-3 ${isMobile ? 'p-3' : 'p-4'} bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200`}>
+            <div className="flex items-center gap-2 text-sm font-medium text-green-700">
               <Car className="h-4 w-4" />
-              <span>Route Found!</span>
+              <span>Route Found! 🎉</span>
             </div>
             
             <div className="space-y-2">
-              <label className="text-xs text-gray-500 font-medium">
+              <label className={`${isMobile ? 'text-sm' : 'text-xs'} text-gray-600 font-medium`}>
                 Suggested Price: {suggestedPrice} ₸
               </label>
               <div className="relative">
@@ -240,18 +243,18 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
                   placeholder={`Your price (suggested: ${suggestedPrice} ₸)`}
                   value={userPrice}
                   onChange={(e) => setUserPrice(e.target.value)}
-                  className="pl-10 py-3"
+                  className={`pl-10 ${isMobile ? 'py-4 text-base' : 'py-3'} rounded-lg border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200`}
                   type="number"
                 />
               </div>
             </div>
             
             <Button 
-              className="w-full py-3 text-base font-medium bg-black hover:bg-gray-800 text-white" 
+              className={`w-full ${isMobile ? 'py-4 text-base' : 'py-3 text-base'} font-medium bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg`}
               onClick={handleFindTaxi}
               disabled={!userPrice && !suggestedPrice}
             >
-              <Car className="h-4 w-4 mr-2" />
+              <Car className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'} mr-2`} />
               Find Taxi
             </Button>
           </div>
@@ -259,10 +262,14 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
 
         {/* Searching for Price Section - Shows when searching for taxi */}
         {routeFound && isSearchingTaxi && (
-          <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Car className="h-4 w-4 animate-pulse" />
-              <span>Searching for price ({userPrice || suggestedPrice} ₸)</span>
+          <div className={`space-y-3 ${isMobile ? 'p-3' : 'p-4'} bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200`}>
+            <div className="flex items-center gap-2 text-sm font-medium text-blue-700">
+              <Car className="h-4 w-4 animate-bounce" />
+              <span>Finding drivers... ({userPrice || suggestedPrice} ₸) 🚕</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+              <span className={`${isMobile ? 'text-sm' : 'text-xs'} text-gray-600`}>This may take a few seconds</span>
             </div>
           </div>
         )}
@@ -319,14 +326,16 @@ export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound, o
       </div>
 
       {/* Search Section */}
-      <div className="mt-auto p-4 border-t border-gray-200">
-        <div className="relative">
-          <Input
-            placeholder="Поиск"
-            className="pl-4 py-2"
-          />
+      {!isMobile && (
+        <div className="mt-auto p-4 border-t border-gray-200">
+          <div className="relative">
+            <Input
+              placeholder="Поиск"
+              className="pl-4 py-2 rounded-lg"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
