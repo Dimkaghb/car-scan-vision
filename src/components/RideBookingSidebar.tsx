@@ -2,19 +2,23 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Navigation, User, Clock, Search } from 'lucide-react';
+import { MapPin, Navigation, User, Clock, Search, DollarSign, Car } from 'lucide-react';
 
 interface RideBookingSidebarProps {
   className?: string;
   onAddressSearch?: (pickup: string, destination: string) => void;
+  onRouteFound?: () => void;
 }
 
-export const RideBookingSidebar = ({ className, onAddressSearch }: RideBookingSidebarProps) => {
+export const RideBookingSidebar = ({ className, onAddressSearch, onRouteFound }: RideBookingSidebarProps) => {
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
   const [selectedRide, setSelectedRide] = useState('uberx');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
+  const [routeFound, setRouteFound] = useState(false);
+  const [userPrice, setUserPrice] = useState('');
+  const [suggestedPrice] = useState('1500'); // Static suggested price for demo
 
   const rideTypes: any[] = [];
 
@@ -26,16 +30,28 @@ export const RideBookingSidebar = ({ className, onAddressSearch }: RideBookingSi
 
     setIsSearching(true);
     setSearchError('');
+    setRouteFound(false);
     
     try {
       if (onAddressSearch) {
         await onAddressSearch(pickup.trim(), destination.trim());
+        setRouteFound(true);
+        if (onRouteFound) {
+          onRouteFound();
+        }
       }
     } catch (error) {
       setSearchError('Failed to find addresses. Please try again.');
+      setRouteFound(false);
     } finally {
       setIsSearching(false);
     }
+  };
+
+  const handleFindTaxi = () => {
+    // Handle taxi booking logic here
+    console.log('Finding taxi with price:', userPrice || suggestedPrice);
+    // You can add actual booking logic here
   };
 
   return (
@@ -109,6 +125,41 @@ export const RideBookingSidebar = ({ className, onAddressSearch }: RideBookingSi
         {searchError && (
           <div className="text-red-500 text-sm mt-2 p-2 bg-red-50 rounded">
             {searchError}
+          </div>
+        )}
+
+        {/* Price Input Section - Shows after route is found */}
+        {routeFound && (
+          <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Car className="h-4 w-4" />
+              <span>Route Found!</span>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 font-medium">
+                Suggested Price: {suggestedPrice} ₸
+              </label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder={`Your price (suggested: ${suggestedPrice} ₸)`}
+                  value={userPrice}
+                  onChange={(e) => setUserPrice(e.target.value)}
+                  className="pl-10 py-3"
+                  type="number"
+                />
+              </div>
+            </div>
+            
+            <Button 
+              className="w-full py-3 text-base font-medium bg-green-600 hover:bg-green-700" 
+              onClick={handleFindTaxi}
+              disabled={!userPrice && !suggestedPrice}
+            >
+              <Car className="h-4 w-4 mr-2" />
+              Find Taxi
+            </Button>
           </div>
         )}
 
